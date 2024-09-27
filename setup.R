@@ -7,6 +7,7 @@
 #-----------------------------------------
 # Author: Trent Henderson, 9 February 2023
 #-----------------------------------------
+# install.packages(c("tibble","dplyr","purrr","tidyr","readr","ggplot2","ggrepel","scales","foreign","patchwork","theft","correctR","RColorBrewer","e1071","caret","glue","cowplot","ggseg","broom","colorspace","ggpubr"))
 
 library(tibble)
 library(dplyr)
