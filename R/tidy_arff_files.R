@@ -2,7 +2,8 @@
 # This script sets out to load all the 
 # packages and folders necessary for the 
 # project. It requires 
-# http://www.timeseriesclassification.com/Downloads/Archives/Univariate2018_arff.zip
+# http://www.timeseriesclassification.com/Downloads/Archives/Univariate2018_arff.zip # Incorrect file path - corrected below
+# Correction Hopmere 27/9/2024 - file path is now: http://www.timeseriesclassification.com/aeon-toolkit/Archives/Univariate2018_arff.zip
 # to be put into the data/ folder
 #
 # NOTE: This script requires setup.R to
