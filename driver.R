@@ -27,7 +27,7 @@ source("analysis/summarise-problems.R")
 
 source("analysis/compute-mean-and-var.R")
 source("analysis/fit-ftm-classifiers.R")
-source("analysis/analyse-ftm-performance.R")
+# source("analysis/analyse-ftm-performance.R") # <----- R file not found 28/9/2024. Commented out to minimize error codes. 
 source("analysis/analyse-ftm-performance-against-chance.R")
 
 # Calculate catch24 features and compute classification performance
