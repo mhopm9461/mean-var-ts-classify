@@ -33,10 +33,12 @@ calculate_features2 <- function(data, id_var = "id", time_var = "timepoint",
   if(!is.null(group_var)){
     data_re <- data_re %>%
       dplyr::rename(group = dplyr::all_of(group_var)) %>%
-      dplyr::select(c(.data$id, .data$timepoint, .data$values, .data$group))
+      # dplyr::select(c(.data$id, .data$timepoint, .data$values, .data$group)) # Original
+      dplyr::select(c("id", "timepoint", "values", "group")) # Modified .data$xyz to "xyz"
   } else{
     data_re <- data_re %>%
-      dplyr::select(c(.data$id, .data$timepoint, .data$values))
+      # dplyr::select(c(.data$id, .data$timepoint, .data$values)) # Original
+      dplyr::select(c("id", "timepoint", "values")) # Modified .data$xyz to "xyz"
   }
   
   data_re <- data_re %>%
@@ -47,8 +49,10 @@ calculate_features2 <- function(data, id_var = "id", time_var = "timepoint",
   if("group" %in% colnames(data_re)){
     outData <- data_re %>%
       tibble::as_tibble() %>%
-      dplyr::group_by(.data$id, .data$group) %>%
-      dplyr::arrange(.data$timepoint) %>%
+      # dplyr::group_by(.data$id, .data$group) %>% # Original
+      # dplyr::arrange(.data$timepoint) %>% # Original
+      dplyr::group_by("id", "group") %>% # Modified .data$xyz to "xyz"
+      dplyr::arrange("timepoint") %>% # Modified .data$xyz to "xyz"
       tidyr::drop_na() %>%
       dplyr::summarise(Rcatch22::catch22_all(.data$values, catch24 = catch24)) %>%
       dplyr::ungroup() %>%
@@ -56,8 +60,10 @@ calculate_features2 <- function(data, id_var = "id", time_var = "timepoint",
   } else{
     outData <- data_re %>%
       tibble::as_tibble() %>%
-      dplyr::group_by(.data$id) %>%
-      dplyr::arrange(.data$timepoint) %>%
+      # dplyr::group_by(.data$id) %>% # Original
+       # dplyr::arrange(.data$timepoint) %>% # Original
+      dplyr::group_by("id") %>% # Modified .data$xyz to "xyz"
+      dplyr::arrange("timepoint") %>% # Modified .data$xyz to "xyz"
       tidyr::drop_na() %>%
       dplyr::summarise(Rcatch22::catch22_all(.data$values, catch24 = catch24)) %>%
       dplyr::ungroup() %>%

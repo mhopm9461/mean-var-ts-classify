@@ -70,16 +70,22 @@ resample_data <- function(data, train_rows, test_rows, train_groups, test_groups
       dplyr::left_join(resampled, by = c("id" = "id"))
     
     train <- newdata %>%
-      dplyr::filter(.data$set_split_new == "Train") %>%
-      dplyr::select(c(.data$id, .data$group, .data$names, .data$values)) %>%
+      # dplyr::filter(.data$set_split_new == "Train") %>% # Original
+      # dplyr::select(c(.data$id, .data$group, .data$names, .data$values)) %>% # Original
+      dplyr::filter("set_split_new" == "Train") %>% # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
+      dplyr::select(c("id","group","names","values")) %>% # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
       tidyr::pivot_wider(id_cols = c("id", "group"), names_from = "names", values_from = "values") %>%
-      dplyr::select(-c(.data$id))
+      # dplyr::select(-c(.data$id)) # Original
+      dplyr::select(-c("id")) # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
     
     test <- newdata %>%
-      dplyr::filter(.data$set_split_new == "Test") %>%
-      dplyr::select(c(.data$id, .data$group, .data$names, .data$values)) %>%
+      # dplyr::filter(.data$set_split_new == "Test") %>% # Original
+      # dplyr::select(c(.data$id, .data$group, .data$names, .data$values)) %>% # Original
+      dplyr::filter("set_split_new" == "Test") %>% # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
+      dplyr::select(c("id", "group", "names", "values")) %>% # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
       tidyr::pivot_wider(id_cols = c("id", "group"), names_from = "names", values_from = "values") %>%
-      dplyr::select(-c(.data$id))
+      # dplyr::select(-c(.data$id)) # Original
+      dplyr::select(-c("id")) # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name.
   }
   
   data_list <- list(train, test)
