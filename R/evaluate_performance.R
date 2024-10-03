@@ -11,14 +11,14 @@ evaluate_performance <- function(data, problem_name, n_resamples = 30){
   
   message(paste0("Doing: ", problem_name, "\n"))
   
-  tmp <- data %>%
-    filter(problem == problem_name) %>%
-    mutate(group = as.factor(as.character(group))) %>%
-    dplyr::select(c(id, group, set_split, names, values)) %>%
-    pivot_wider(id_cols = c(id, group, set_split), names_from = "names", values_from = "values") %>%
-    dplyr::select_if(~sum(!is.na(.)) > 0) %>% # Delete features that are all NaNs
-    dplyr::select(where(~dplyr::n_distinct(.) > 1)) %>% # Delete features with constant values
-    pivot_longer(cols = -c(id, group, set_split), names_to = "names", values_to = "values")
+  tmp <- data
+  tmp <- filter(tmp, problem == problem_name)
+  tmp <- mutate(tmp, group = as.factor(as.character(group)))
+  tmp <- dplyr::select(tmp, c(id, group, set_split, names, values))
+  tmp <- pivot_wider(tmp, id_cols = c(id, group, set_split), names_from = "names", values_from = "values")
+  tmp <- dplyr::select_if(tmp, ~sum(!is.na(.)) > 0) # Delete features that are all NaNs
+  tmp <- dplyr::select(tmp, where(~dplyr::n_distinct(.) > 1)) # Delete features with constant values
+  tmp <- pivot_longer(tmp, cols = -c(id, group, set_split), names_to = "names", values_to = "values")
   
   #------------------ Find good features to retain across resamples ---------------
   
@@ -29,21 +29,21 @@ evaluate_performance <- function(data, problem_name, n_resamples = 30){
   
   # Get proportion per class in train and test to use for resample procedure
   
-  train_props <- tmp %>%
-    dplyr::filter(set_split == "Train") %>%
-    dplyr::select(c(id, group)) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(group) %>%
-    dplyr::summarise(counter = dplyr::n()) %>%
-    dplyr::ungroup()
+  train_props <- tmp
+  train_props <- dplyr::filter(train_props, set_split == "Train")
+  train_props <- dplyr::select(train_props, c(id, group))
+  train_props <- dplyr::distinct(train_props)
+  train_props <- dplyr::group_by(train_props, group)
+  train_props <- dplyr::summarise(train_props, counter = dplyr::n())
+  train_props <- dplyr::ungroup(train_props)
   
-  test_props <- tmp %>%
-    dplyr::filter(set_split == "Test") %>%
-    dplyr::select(c(id, group)) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(group) %>%
-    dplyr::summarise(counter = dplyr::n()) %>%
-    dplyr::ungroup()
+  test_props <- tmp
+  test_props <- dplyr::filter(test_props, set_split == "Test")
+  test_props <- dplyr::select(test_props, c(id, group))
+  test_props <- dplyr::distinct(test_props)
+  test_props <- dplyr::group_by(test_props, group)
+  test_props <- dplyr::summarise(test_props, counter = dplyr::n())
+  test_props <- dplyr::ungroup(test_props)
   
   #-------------------------------------------------
   # Keep all features that have enough unique values
@@ -52,32 +52,29 @@ evaluate_performance <- function(data, problem_name, n_resamples = 30){
   
   # Generate resamples
   
-  res_data <- 1:n_resamples %>%
-    purrr::map(~ resample_data(tmp, train_rows = train_rows, test_rows = test_rows, train_props, test_props, .x))
+  res_data <- purrr::map(1:n_resamples, ~ resample_data(tmp, train_rows = train_rows, test_rows = test_rows, train_props, test_props, .x))
   
   # Find only features across all resamples that have SD > 0
   
-  good_features <- 1:n_resamples %>%
-    purrr::map(~ find_good_features(res_data, .x)) %>%
-    unlist()
+  good_features <- purrr::map(1:n_resamples, ~ find_good_features(res_data, .x))
+  good_features <- unlist(good_features)
   
-  good_features <- data.frame(names = good_features) %>%
-    group_by(names) %>%
-    summarise(counter = n()) %>%
-    ungroup() %>%
-    filter(counter == max(counter)) %>%
-    pull(names)
+  good_features <- data.frame(names = good_features)
+  good_features <- group_by(good_features, names)
+  good_features <- summarise(good_features, counter = n())
+  good_features <- ungroup(good_features)
+  good_features <- filter(good_features, counter == max(counter))
+  good_features <- pull(good_features, names)
   
   # Filter each resample by the new "good" feature vector
   
-  res_data <- 1:n_resamples %>%
-    purrr::map(~ filter_good_features(res_data, .x, good_features = good_features))
+  res_data <- purrr::map(1:n_resamples, ~ filter_good_features(res_data, .x, good_features = good_features))
   
   #---------------- Model fitting ----------------
   
-  outs <- 1:n_resamples %>%
-    purrr::map_dfr(~ fit_models(res_data, .x)) %>%
-    mutate(problem = problem_name)
+  outs <- purrr::map_dfr(1:n_resamples, ~ fit_models(res_data, .x))
+  outs <- mutate(outs, problem = problem_name)
   
   return(outs)
+  
 }

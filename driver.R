@@ -10,24 +10,26 @@
 #-----------------------------------------
 # Author: Trent Henderson, 9 February 2023
 #-----------------------------------------
+# Edited by: Michael H, 3 October 2024
+#-----------------------------------------
 
-source("setup.R")
+source("setup.R") #MH reviewed & rerun
 
 #---------------- UEA & UCR Repository analysis ------------
 
 # Prepare time-series datasets
 
-source("analysis/prepare-time-series-data.R")
+source("analysis/prepare-time-series-data.R") #MH reviewed & rerun
 
 # Summarise problems
 
-source("analysis/summarise-problems.R")
+source("analysis/summarise-problems.R") #MH reviewed & rerun
 
 # Calculate mean and variance features and classification performance
 
-source("analysis/compute-mean-and-var.R")
+source("analysis/compute-mean-and-var.R") #MH reviewed & rerun
 source("analysis/fit-ftm-classifiers.R")
-# source("analysis/analyse-ftm-performance.R") # <----- R file not found 28/9/2024. Commented out to minimize error codes. 
+source("analysis/analyse-ftm-performance.R") # <----- R file not found 28/9/2024. Commented out to minimize error codes. 
 source("analysis/analyse-ftm-performance-against-chance.R")
 
 # Calculate catch24 features and compute classification performance

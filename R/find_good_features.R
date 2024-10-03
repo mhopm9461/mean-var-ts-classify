@@ -10,24 +10,23 @@ find_good_features <- function(data, x){
   
   # Do train set
   
-  train_feats <- data[[x]]$Train %>%
-    dplyr::select(-c(group)) %>%
-    dplyr::select_if(~ sd(.) > 0) # Delete features with SD = 0
-  
+  train_feats <- data[[x]]$Train
+  train_feats <- dplyr::select(train_feats, -c(group))
+  train_feats <- dplyr::select_if(train_feats, ~ sd(.) > 0) # Delete features with SD = 0
   train_feats <- colnames(train_feats)
   
   # Do test set
   
-  test_feats <- data[[x]]$Test %>%
-    dplyr::select(-c(group)) %>%
-    dplyr::select_if(~ sd(.) > 0) # Delete features with SD = 0
-  
+  test_feats <- data[[x]]$Test
+  test_feats <- dplyr::select(test_feats, -c(group))
+  test_feats <- dplyr::select_if(test_feats, ~ sd(.) > 0) # Delete features with SD = 0
   test_feats <- colnames(test_feats)
   
   # Return consistent good values across both
   
   vals <- unlist(list(train_feats, test_feats))
-  return(unique(vals[duplicated(vals)]))
+  unique_vals <- unique(vals[duplicated(vals)])
+  return(unique_vals)
 }
 
 #' Filter resample data sets according to good feature list

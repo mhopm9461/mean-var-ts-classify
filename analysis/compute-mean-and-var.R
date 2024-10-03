@@ -29,26 +29,18 @@ load("data/TimeSeriesData.Rda")
 
 extract_mean_and_sd <- function(data, theproblem){
   
-  message(paste0("Doing problem ", match(theproblem, 
-  unique(data$problem)), "/", length(unique(data$problem))))
+  message(paste0("Doing problem ", match(theproblem, unique(data$problem)), "/", length(unique(data$problem))))
   
   # Filter to problem of interest and calculate features
   
   outs <- data %>%
     filter(problem == theproblem) %>%
     dplyr::rename(group = target) %>%
-    # dplyr::select(c(.data$id, .data$timepoint, .data$values, .data$group, .data$set_split, .data$problem)) %>% # Original # nolint
-    # dplyr::group_by(.data$id, .data$group, .data$set_split, .data$problem) %>% # Original
-    # dplyr::arrange(.data$timepoint) %>% # Original
-    # dplyr::summarise(mu = mean(.data$values, na.rm = TRUE),sigma = stats::sd(.data$values, na.rm = TRUE)) %>% # Original
-    dplyr::select(c("id","timepoint","values","group","set_split","problem")) %>% 
-    # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name
-    dplyr::group_by("id","group","set_split","problem") %>% 
-    # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name
-    dplyr::arrange("timepoint") %>% 
-    # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name
-    dplyr::summarise(mu = mean("values", na.rm = TRUE),sigma = stats::sd("values", na.rm = TRUE)) %>% 
-    # Modified all instances .data$xyz to "xyz" where "xyz" = a data field name
+    dplyr::select(c(.data$id, .data$timepoint, .data$values, .data$group, .data$set_split, .data$problem)) %>%
+    dplyr::group_by(.data$id, .data$group, .data$set_split, .data$problem) %>%
+    dplyr::arrange(.data$timepoint) %>%
+    dplyr::summarise(mu = mean(.data$values, na.rm = TRUE),
+                     sigma = stats::sd(.data$values, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(method = "Mean and variance") %>%
     tidyr::pivot_longer(cols = mu:sigma, names_to = "names", values_to = "values")
